@@ -9,11 +9,11 @@ def answer_question(question):
     document = Path("data/git_기초.txt").read_text(
         encoding="utf-8"
     )
-    prompt = f"""아래 자료를 바탕으로 질문에 답하세요.ㅍ자료에 없으면 찾을 수 없다고 말하세요.
+    prompt = f"""아래 자료를 바탕으로 질문에 답하세요.자료에 없으면 찾을 수 없다고 말하세요.
                 자료: {document}
 
                 질문: {question}
-              """
+                """
 
     interaction = client.interactions.create(
         model="gemini-3.5-flash-lite",
