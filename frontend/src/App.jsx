@@ -53,6 +53,11 @@ function App() {
           <div className={`message ${message.role}`} key={index}>
             <span className="role">{message.role === 'user' ? '나' : '챗봇'}</span>
             <p>{message.text}</p>
+            {message.sources?.length > 0 && (
+              <small className="sources">
+                참고 자료: {message.sources.join(", ")}
+              </small>
+            )}
           </div>
         ))}
         {loading && <p className="status">답변을 작성하고 있습니다...</p>}
@@ -78,3 +83,11 @@ function App() {
 }
 
 export default App
+
+.sources {
+  display: block;
+  margin-top: 7px;
+  color: #597287;
+  font-size: 13px;
+  line-height: 1.5;
+}
