@@ -1,20 +1,17 @@
-from pathlib import Path
+"""Supabase가 허용한 현재 사용자의 문서에서 문단을 검색합니다."""
 
-DATA_DIR = Path(__file__).resolve().parent / "data"
 
-def load_chunks():
+def load_chunks(documents):
     chunks = []
-    for path in sorted(DATA_DIR.glob("*.txt")):
-        text = path.read_text(encoding="utf-8")
-
-        for paragraph in text.split("\n\n"):
+    for document in documents:
+        for paragraph in document["content"].split("\n\n"):
             paragraph = paragraph.strip()
             if paragraph:
-                chunks.append({
-                    "source": path.name,
-                    "text": paragraph,
-                })
+                chunks.append(
+                    {"source": document["filename"], "text": paragraph}
+                )
     return chunks
+
 
 def make_words(text):
     cleaned = text.lower()
@@ -22,10 +19,11 @@ def make_words(text):
         cleaned = cleaned.replace(mark, " ")
     return cleaned.split()
 
-def find_chunks(question):
+
+def find_chunks(question, documents):
     question_words = make_words(question)
     found = []
-    for chunk in load_chunks() :
+    for chunk in load_chunks(documents):
         content_words = make_words(chunk["text"])
         for word in question_words:
             if len(word) > 1 and word in content_words:

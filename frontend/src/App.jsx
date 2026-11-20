@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import DocumentSources from './DocumentSources'
 
 const firstMessage = {
   role: 'assistant',
-  text: '안녕하세요. 저는 Git 수업 도우미입니다.',
+  text: '안녕하세요. 왼쪽 문서 소스를 바탕으로 질문에 답하는 챗봇입니다.',
 }
 
 function App() {
@@ -20,7 +21,6 @@ function App() {
     setLoading(true)
 
     try {
-      // 실습 5에서 이 두 줄을 Python API 호출로 교체합니다.
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,7 +29,13 @@ function App() {
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = await response.json()
       const answer = data.answer
-      setMessages((current) => [...current, { role: 'assistant', text: answer }])
+      setMessages((current) => [
+        ...current, { 
+          role: "assistant", 
+          text: answer,
+          sources: data.sources ?? [],
+         },        
+      ])
     } catch (error) {
       setMessages((current) => [...current, {
         role: 'assistant',
@@ -48,14 +54,15 @@ function App() {
         <p>수업 자료에 대해 궁금한 점을 입력해 보세요.</p>
       </header>
 
+      <DocumentSources />
+
       <section className="chat" aria-label="대화 내용">
         {messages.map((message, index) => (
           <div className={`message ${message.role}`} key={index}>
             <span className="role">{message.role === 'user' ? '나' : '챗봇'}</span>
             <p>{message.text}</p>
-            {message.sources?.length > 0 && (
-              <small className="sources">
-                참고 자료: {message.sources.join(", ")}
+            {message.sources?.length > 0 && (<small className="sources">
+              참고자료: {message.sources.join(",")}
               </small>
             )}
           </div>
@@ -83,11 +90,3 @@ function App() {
 }
 
 export default App
-
-.sources {
-  display: block;
-  margin-top: 7px;
-  color: #597287;
-  font-size: 13px;
-  line-height: 1.5;
-}
